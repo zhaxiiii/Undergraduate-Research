@@ -1,0 +1,196 @@
+\documentclass{article}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{ulem}
+\usepackage{geometry}
+\usepackage{color}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{amsthm}
+
+% 英文正文字体
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Consolas}
+
+% 中文字体
+\setCJKmainfont{SimSun}
+\setCJKsansfont{Microsoft YaHei}
+\setCJKmonofont{FangSong}
+
+\title{Weierstrass函数的初步学习报告}
+\author{赵智阳}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{背景与历史意义}
+
+\subsection{历史背景}
+Weierstrass函数由德国数学家卡尔·魏尔斯特拉斯（Karl Weierstrass）于1872年7月18日在柏林科学院首次提出。这个构造是对19世纪数学界普遍误解的直接回应——当时数学家们（包括柯西）普遍认为连续函数在绝大多数点都是可导的，不可导点只是孤立的例外。
+
+Weierstrass的函数：
+\[
+W(x) = \sum_{n=0}^{\infty} a^n \cos(b^n \pi x), \quad 0<a<1,\ b\in\mathbb{N}_{\text{odd}},\ ab>1
+\]
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{weirestrass_function_approximation.png}
+    \caption{python模拟的函数图像，$n=20$}
+    \label{fig:my_label}
+\end{figure}
+证明了存在处处连续但无处可导的函数（将会在section2中详细探讨），这一结果在当时引起了巨大震动，说明了所谓的“病态”函数的存在性，改变了当时数学家对连续函数的看法。
+
+\subsection{前驱工作}
+早在魏尔斯特拉斯之前，已有数学家触及连续函数的复杂性边界。波尔查诺在1830年代的手稿中构造了无处可导连续函数的雏形，黎曼1854年猜测其函数$R(x) = \sum \frac{\sin(n^2 x)}{n^2}$可能具有类似性质，塞莱里耶约1860年发现$\sum \frac{\sin(a^n x)}{a^n}$的奇特行为，汉克尔1870年试图从"凝聚奇点"角度理解异常性。
+
+魏尔斯特拉斯的原始条件后被不断优化。哈代在1916年作出了关键改进，将无处可导的条件放宽为 $ab \geq 1$，并对函数的不可导性给出了更精确的描述。高木贞治于1903年提出了一个基于距离函数的巧妙例子，范德瓦尔登在1930年进一步给出了初等而清晰的证明。
+
+\subsection{数学意义}
+Weierstrass函数的提出，其核心意义在于彻底澄清了连续性与可微性这两个基本概念的逻辑关系。它通过一个具体构造证明，可微性是远比连续性更为苛刻的条件，从而终结了十九世纪数学界普遍持有的“连续函数几乎处处可导”这一错误直觉。
+
+这一反例推动了数学分析的严格化进程。它使得数学家们更加坚定地追求逻辑的严密性，普遍采用$\varepsilon$-$\delta$语言来定义极限与连续性，确立了“证明必须独立于几何直观”这一现代分析的基本原则。
+
+从学科发展的角度看，该函数的研究催生并深化了多个现代数学领域。在实分析中，它促使人们系统地对函数进行精细分类；在函数空间理论里，它揭示出可微函数$C^1$在连续函数空间$C$中实为“稀疏”子集（在贝尔纲意义下）；同时，它也间接促进了描述集合论中对函数层次结构的探讨。此外，其在不同尺度下呈现的自相似结构，使之被公认为分形几何的早期先驱，为后世理解复杂形态开辟了道路。
+
+\section{性质研究}
+
+考虑Weierstrass函数的经典形式：
+\[
+W(x) = \sum_{n=0}^{\infty} a^n \cos(b^n \pi x), \quad x \in \mathbb{R}, \quad 0<a<1,\ b\in\mathbb{N}_{\text{odd}},\ ab>1
+\]
+
+\subsection{函数连续性分析}
+证明思路：连续函数的一致收敛极限依旧是连续函数。
+
+观察$f_n(x) = a^n \cos(b^n \pi x)$, 对任意$n \geq 0$,有
+
+在$\mathbb{R}$上，$\cos(x)$和$b^n \pi x$处处连续。
+
+由复合函数连续性知$f_n(x)$亦为连续函数,故部分和函数$S_N(x)$也是连续函数（连续函数的有限和连续）：
+\[
+S_N(x) = \sum_{n=0}^{N} a^n \cos(b^n \pi x), \quad N = 0, 1, 2, \dots
+\]
+对任意$x \in \mathbb{R}$及任意$n \geq 0$，有：
+\[
+|f_n(x)|=|a^n \cos(b^n \pi x)| \leq |a^n|*1=a^n
+\]
+又因$0 < x < 1$,有几何级数收敛：
+\[
+\sum_{n=0}^{\infty} a^n = \frac{1}{1-a} < \infty
+\]
+根据Weierstrass M-判别法，函数项级数$\sum_{n=0}^{\infty}f_n(x)$在$\mathbb{R}$上一致连续。
+
+现考虑部分和函数列$\{S_N(x)\}_{N=0}^{\infty}$，已知：
+\begin{enumerate}
+    \item 对任意$n>0$有$S_N(x)$连续
+    \item $S_N(x)$在$\mathbb{R}$上一致收敛于$W(x)$
+\end{enumerate}
+由函数列的一致收敛极限定理知，$W(x)$在$\mathbb{R}$上处处连续。
+
+至此，Weierstrass函数连续性得证。
+
+\subsection{函数处处不可导性分析}
+这里我们抛弃魏尔斯特拉斯的反证法，20世纪后期发展出的自相似证明思路：放大高频振荡，利用自相似性证明差商爆炸。
+
+操作weiertrass函数，将其分解为低频与高频部分：
+\[
+W(x) = S_m(x) + R_m(x),\quad
+S_m(x) = \sum_{n=0}^{m-1} a^n \cos(b^n \pi x),\quad
+R_m(x) = \sum_{n=m}^{\infty} a^n \cos(b^n \pi x).
+\]
+对任意固定点$x_0$，考虑步长$h_m=b^{-m}$的差商：
+\[
+Q_m^+=\frac{W(x_0+b^{-m})-W(x_0)}{b^{-m}},\quad Q_m^-=\frac{W(x_0-b^{-m})-W(x_0)}{-b^{-m}}
+\]
+
+下面考虑低频$S_m$，对于 $n < m$，利用三角恒等式有
+\begin{align*}
+&\left|\frac{\cos(b^n\pi(x_0 + h_m)) - \cos(b^n\pi x_0)}{h_m}\right| \\
+&\quad = b^m \left|\cos(b^n\pi(x_0 + b^{-m})) - \cos(b^n\pi x_0)\right| \\
+&\quad \leq b^m \cdot 2 \cdot 1 \cdot \left|\sin\left(\frac{\pi b^{n-m}}{2}\right)\right| \\
+&\quad \leq \pi b^n \quad
+\end{align*}
+记
+\[
+E_m^{\pm} = \frac{S_m(x_0 \pm h_m) - S_m(x_0)}{\pm h_m},
+\]
+则
+\[
+|E_m^{\pm}|\leq \sum_{n=0}^{m-1} a^n \cdot \pi b^n = \pi \sum_{n=0}^{m-1} (ab)^n 
+= \pi \cdot \frac{(ab)^m - 1}{ab - 1}.
+\]
+
+考虑高频$R_m$，由于$b\in\mathbb{N}_{\text{odd}}$，对于 $n \geq m$ 有
+\[
+\cos(b^n\pi(x_0 \pm b^{-m})) = \cos(b^n\pi x_0 \pm b^{n-m}\pi) = -\cos(b^n\pi x_0).
+\]
+因此
+\[
+R_m(x_0 \pm h_m) - R_m(x_0) = -2 \sum_{n=m}^{\infty} a^n \cos(b^n\pi x_0).
+\]
+令
+\[
+T_m = \sum_{n=m}^{\infty} a^n \cos(b^n\pi x_0),
+\]
+则
+\[
+\frac{R_m(x_0 + h_m) - R_m(x_0)}{h_m} = -2b^m T_m,\quad
+\frac{R_m(x_0 - h_m) - R_m(x_0)}{-h_m} = 2b^m T_m.
+\]
+
+由此差商可变形为：
+\[
+Q_m^{+} = \frac{W(x_0 + h_m) - W(x_0)}{h_m} = -2b^m T_m + E_m^{+},\quad
+Q_m^{-} = \frac{W(x_0 - h_m) - W(x_0)}{-h_m} = 2b^m T_m + E_m^{-}.
+\]
+
+假设 $W(x)$ 在 $x_0$ 处可导，记导数为 $L$，则
+\[
+\lim_{m\to\infty} Q_m^{+} = L \quad \text{且} \quad \lim_{m\to\infty} Q_m^{-} = L.
+\]
+即有
+\[
+\lim_{m\to\infty} (Q_m^{+} - Q_m^{-}) = 0.
+\]
+又因为
+\[
+Q_m^{+} - Q_m^{-} = (-2b^m T_m + E_m^{+}) - (2b^m T_m + E_m^{-}) = -4b^m T_m + (E_m^{+} - E_m^{-}).
+\]
+从而
+\[
+\lim_{m\to\infty} \left[-4b^m T_m + (E_m^{+} - E_m^{-})\right] = 0.
+\]
+因为$|E_m^{+} - E_m^{-}| \leq 2\pi \cdot \frac{(ab)^m - 1}{ab - 1} = O((ab)^m)$，
+要使得上式极限为 $0$，必须有 $b^m T_m$ 趋于（0？）有限极限。
+但
+\begin{align*}
+|b^m T_m| &= b^m \left|\sum_{n=m}^{\infty} a^n \cos(b^n\pi x_0)\right| \\
+&\geq b^m \left(a^m |\cos(b^m\pi x_0)| - \sum_{n=m+1}^{\infty} a^n\right) \\
+&= (ab)^m |\cos(b^m\pi x_0)| - \frac{a^{m+1}b^m}{1-a}.
+\end{align*}
+由序列 $\{b^m x_0\}$ 模 $1$ 的稠密性（数论中的“深刻结论”），存在无穷多个 $m$ 使得 $|\cos(b^m\pi x_0)| \geq \frac{1}{2}$。
+对这样的 $m$，
+\[
+|b^m T_m| \geq \frac{1}{2}(ab)^m - \frac{a^{m+1}b^m}{1-a} = (ab)^m\left(\frac{1}{2} - \frac{a}{1-a}\right).
+\]
+当 $a < \frac{1}{3}$ 时括号内为正；对 $a \geq \frac{1}{3}$，可通过选择更大的 $m$ 使 $|\cos(b^m\pi x_0)|$ 充分接近 $1$，从而存在常数 $C > 0$ 使得对无穷多个 $m$ 有 $|b^m T_m| \geq C(ab)^m$。
+由于 $ab > 1$，$(ab)^m \to \infty$，故 $b^m T_m$ 不可能趋于有限极限，矛盾。
+
+因此假设不成立，$W(x)$ 在 $x_0$ 处不可导。
+
+根据$x_0$的任意性，有$W(x)$ 在 $\mathbb{R}$ 上处处不可导，Weierstrass函数处处不可导得证。
+
+
+\section{一些收获与疑问}
+首先在研究可微性时，步长选择：$h_m = b^{-m}$，以及$W(x)$的分解和$b\in\mathbb{N}_{\text{odd}}$的选取，这是利用三角函数的周期性，保证前后项的一致，反映了系统的自相似性（分形，那么相应的，$W(x)$的函数图像的阶数是多少？）。
+
+同时和实分析中$G_{\delta},\quad F_{\sigma}$的构造法相似，有限项的和是可微的；无限项的和可能不可微。提及实分析，那么Weierstrass函数在Lebesgue测度论下是否可导呢？
+
+参数$a,\quad b$有什么物理意义么，是否存在纯几何的证明（分形：任意小尺度下形状依旧“粗糙”$\to$不存在切线？）
+\end{document}
